@@ -1,0 +1,4 @@
+###
+##DE2B84#
+###
+Number of rooms: 1
