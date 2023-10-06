@@ -39,7 +39,7 @@ class FloorPlanColorizer:
 
         for y in range(self.height):
             for x in range(self.width):
-                if self.floor_plan[y][x] == ' ' and (x, y) not in visited:
+                if self.floor_plan[y][x] != '#' and (x, y) not in visited:
                     room = self.explore_room(x, y, visited)
                     visited.update(room)
                     rooms.append(room)
@@ -55,16 +55,23 @@ class FloorPlanColorizer:
 
             visited.add((x, y))  # Mark the cell as visited
 
-            neighbors = [(x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)]
-            for nx, ny in neighbors:
-                if 0 <= nx < self.width and 0 <= ny < self.height \
-                        and self.floor_plan[ny][nx] != '#' and (nx, ny) not in visited:
+            for nx, ny in self.get_neighbors(x, y):
+                if self.is_valid(nx, ny) and self.is_passable(nx, ny, visited):
                     if self.is_door(nx, ny):
                         visited.add((nx, ny))  # Mark the door as visited
                     else:
                         stack.append((nx, ny))
 
         return room
+
+    def get_neighbors(self, x, y):
+        return [(x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)]
+
+    def is_valid(self, x, y):
+        return 0 <= x < self.width and 0 <= y < self.height
+
+    def is_passable(self, x, y, visited):
+        return self.floor_plan[y][x] != '#' and (x, y) not in visited
 
     def is_door(self, x, y):
         try:
